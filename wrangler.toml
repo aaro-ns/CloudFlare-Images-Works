@@ -8,12 +8,12 @@ enabled = true
 
 [[d1_databases]]
 binding = "MY_DB"
-database_name = "buling-imgbed-d1"
+database_name = "${CF_D1_DATABASE}" 
 database_id = "xxxx"
 
 [[r2_buckets]]
 binding = "MY_BUCKET"
-bucket_name = "buling-imgbed-r2"
+bucket_name = "${CF_R2_BUCKET}" 
 
 
 [vars]
