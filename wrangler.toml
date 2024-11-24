@@ -9,16 +9,12 @@ enabled = true
 [[d1_databases]]
 binding = "MY_DB"
 database_name = "${CF_D1_DATABASE}" 
-database_id = "xxxx"
+database_id = "xxxx"  # 这里可以在工作流中替换为实际的数据库 ID
 
 [[r2_buckets]]
 binding = "MY_BUCKET"
-bucket_name = "${CF_R2_BUCKET}" 
-
+bucket_name = "${CF_R2_BUCKET}"  # 这里是占位符，后续会被替换 
 
 [vars]
 JWT_SECRET = "随机uuid生成" 
 TG_BOT_TOKEN = "TG机器人token"
-
-
- 
