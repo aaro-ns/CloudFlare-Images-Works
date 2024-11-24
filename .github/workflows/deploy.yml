@@ -100,7 +100,7 @@ jobs:
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CF_ACCOUNT_ID }}
         run: |
           echo "开始部署到 Cloudflare Workers..."
-          npm run deploy &>/dev/null || {
+          npm run deploy  || {
             echo "❌ 部署失败"
             exit 1
           }
