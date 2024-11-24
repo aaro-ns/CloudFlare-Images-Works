@@ -31,13 +31,10 @@ jobs:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CF_API_TOKEN }}
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CF_ACCOUNT_ID }}
         run: |
-          # 从环境变量中读取数据库名称和地区，使用默认值
-          DATABASE_NAME=${{ secrets.Cf_D1_DATABASE || 'buling-imgbed-d1' }}
-          LOCATION=${{ secrets.CF_LOCATION || 'apac' }}  # 默认地区为亚太
+          DATABASE_NAME=${{ secrets.CF_D1_DATABASE || 'buling-imgbed-d1' }}
+          LOCATION=${{ secrets.CF_LOCATION || 'apac' }}
           
           echo "Checking existing D1 databases..."
-          wrangler d1 list &>/dev/null || echo "Failed to list databases"
-          
           DATABASE_INFO=$(wrangler d1 list 2>/dev/null | grep "$DATABASE_NAME" || echo "")
           if [ -z "$DATABASE_INFO" ]; then
             echo "Creating D1 database..."
@@ -74,10 +71,9 @@ jobs:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CF_API_TOKEN }}
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CF_ACCOUNT_ID }}
         run: |
-          # 从环境变量中读取存储桶名称和地区，使用默认值
-          BUCKET_NAME=${{ secrets.Cf_R2_BUCKET || 'buling-imgbed-r2' }}
-          LOCATION=${{ secrets.CF_LOCATION || 'apac' }}  # 默认地区为亚太
-
+          BUCKET_NAME=${{ secrets.CF_R2_BUCKET || 'buling-imgbed-r2' }}
+          LOCATION=${{ secrets.CF_LOCATION || 'apac' }}
+          
           echo "Checking existing R2 buckets..."
           BUCKET_INFO=$(wrangler r2 bucket list | grep "$BUCKET_NAME" || echo "")
           if [ -z "$BUCKET_INFO" ]; then
@@ -94,13 +90,19 @@ jobs:
           sed -i "s/TG_BOT_TOKEN = \".*\"/TG_BOT_TOKEN = \"${{ secrets.TG_BOT_TOKEN }}\"/" wrangler.toml
           echo "Configuration updated successfully"
 
-      - name: 6.Deploy to Cloudflare Workers
+      - name: 6.Update wrangler.toml with actual values
+        run: |
+          sed -i "s/\${CF_D1_DATABASE}/$DATABASE_NAME/" wrangler.toml
+          sed -i "s/\${CF_R2_BUCKET}/$BUCKET_NAME/" wrangler.toml
+          echo "Updated wrangler.toml with actual values"
+
+      - name: 7.Deploy to Cloudflare Workers
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CF_API_TOKEN }}
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CF_ACCOUNT_ID }}
         run: |
           echo "开始部署到 Cloudflare Workers..."
-          npm run deploy  || {
+          npm run deploy || {
             echo "❌ 部署失败"
             exit 1
           }
